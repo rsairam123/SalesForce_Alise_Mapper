@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salesforce User Alias Mapper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">Salesforce User Alias Mapper</h1>
+
+        <!-- Add User Form -->
+        <div class="form-card">
+            <h2>Add New User</h2>
+            <input type="text" id="user_name" placeholder="Enter User Name">
+
+            <div id="salesforce_names_container" class="sf-container"></div>
+
+            <div class="form-buttons">
+                <button type="button" class="add-name-btn" onclick="addSfInput()">+ Add Name</button>
+                <button class="submit-btn" onclick="addUser()">Add / Merge User</button>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="table-card">
+            <h2>Users List</h2>
+            <table id="users_table">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>User Name</th>
+                        <th>Salesforce Names</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

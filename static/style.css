@@ -1,0 +1,125 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f4f6fb;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.main-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #0072ff;
+    margin-bottom: 30px;
+}
+
+.form-card, .table-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.form-buttons {
+    margin-top: 15px;
+}
+
+.add-name-btn, .submit-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.add-name-btn {
+    background: #007bff;
+    color: white;
+}
+
+.add-name-btn:hover {
+    background: #0064d2;
+}
+
+.submit-btn {
+    background: #28a745;
+    color: white;
+    margin-left: 10px;
+}
+
+.submit-btn:hover {
+    background: #218838;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th {
+    background: #0072ff;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    border-radius: 8px 8px 0 0;
+}
+
+td {
+    background: #fff;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+}
+
+.sf-tag {
+    background: #ffffff;
+    color: rgb(48, 46, 46);
+    padding: 6px 10px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    display: block;
+    cursor: pointer;
+}
+
+.sf-tag:focus {
+    outline: none;
+    background: #ede2e2;
+}
+
+button.update-btn, button.delete-btn {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    margin-right: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button.delete-btn {
+    background: #dc3545;
+}
+
+button.update-btn:hover {
+    background: #138496;
+}
+
+button.delete-btn:hover {
+    background: #b52a35;
+}
