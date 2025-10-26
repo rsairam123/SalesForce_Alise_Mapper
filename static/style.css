@@ -1,125 +1,67 @@
 body {
-    font-family: 'Inter', sans-serif;
-    background: #f4f6fb;
-    margin: 0;
-    padding: 20px;
-    color: #333;
+    background-color: #f4f7fb;
 }
 
-.container {
-    max-width: 1000px;
+/* Center container */
+.bx--grid--full-width {
+    max-width: 1400px;
     margin: auto;
 }
 
-.main-title {
-    text-align: center;
-    font-size: 2rem;
-    color: #0072ff;
-    margin-bottom: 30px;
-}
-
-.form-card, .table-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px 30px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-}
-
-input[type="text"] {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-}
-
-.form-buttons {
-    margin-top: 15px;
-}
-
-.add-name-btn, .submit-btn {
-    padding: 10px 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 15px;
-}
-
-.add-name-btn {
-    background: #007bff;
-    color: white;
-}
-
-.add-name-btn:hover {
-    background: #0064d2;
-}
-
-.submit-btn {
-    background: #28a745;
-    color: white;
-    margin-left: 10px;
-}
-
-.submit-btn:hover {
-    background: #218838;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th {
-    background: #0072ff;
-    color: white;
-    padding: 12px;
-    text-align: left;
-    border-radius: 8px 8px 0 0;
-}
-
-td {
-    background: #fff;
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-    vertical-align: top;
-}
-
-.sf-tag {
+/* Card-like containers */
+.bx--tile {
     background: #ffffff;
-    color: rgb(48, 46, 46);
-    padding: 6px 10px;
-    border-radius: 10px;
-    margin-bottom: 5px;
-    display: block;
-    cursor: pointer;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.sf-tag:focus {
-    outline: none;
-    background: #ede2e2;
+/* === FORM STYLING === */
+.form-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 40%;          /* narrower form */
+    align-items: flex-start; /* aligns all inputs to the left */
+    margin-left: 1rem;   /* small left padding */
 }
 
-button.update-btn, button.delete-btn {
-    background: #17a2b8;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    margin-right: 8px;
-    border-radius: 6px;
-    cursor: pointer;
+/* Keep labels and inputs aligned neatly */
+.bx--form-item {
+    width: 100%;
 }
 
-button.delete-btn {
-    background: #dc3545;
+/* Adjust button position */
+.form-wrapper .bx--btn {
+    margin-top: 0.5rem;
+    align-self: flex-start;
 }
 
-button.update-btn:hover {
-    background: #138496;
+/* === TABLE STYLING === */
+.table-container {
+    overflow-x: auto;
 }
 
-button.delete-btn:hover {
-    background: #b52a35;
+.bx--data-table {
+    width: 100%;
+    font-size: 0.95rem;
+}
+
+.bx--data-table th,
+.bx--data-table td {
+    padding: 1rem;
+}
+
+.bx--data-table tbody tr:hover {
+    background-color: #e8f0ff;
+}
+
+/* Buttons */
+.bx--btn {
+    height: 40px;
+    align-self: flex-end;
+}
+
+.bx--btn:hover {
+    transform: scale(1.03);
+    transition: transform 0.2s ease-in-out;
 }
