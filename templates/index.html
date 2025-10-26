@@ -2,40 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Salesforce User Alias Mapper</title>
+    <title>Salesforce Account Alias Mapper</title>
+
+    <!-- Carbon Design System -->
+    <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css">
+    <script src="https://unpkg.com/carbon-components/scripts/carbon-components.min.js" defer></script>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <div class="container">
-        <h1 class="main-title">Salesforce User Alias Mapper</h1>
 
-        <!-- Add User Form -->
-        <div class="form-card">
-            <h2>Add New User</h2>
-            <input type="text" id="user_name" placeholder="Enter User Name">
+<body class="bx--body">
+    <div class="bx--grid bx--grid--full-width">
+        <div class="bx--row">
+            <div class="bx--col-lg-12">
 
-            <div id="salesforce_names_container" class="sf-container"></div>
+                <h2 class="bx--type-expressive-heading-04 bx--text-center" style="margin: 20px 0; color: #0f62fe;">
+                    SALESFORCE ACCOUNT ALIAS MAPPER
+                </h2>
 
-            <div class="form-buttons">
-                <button type="button" class="add-name-btn" onclick="addSfInput()">+ Add Name</button>
-                <button class="submit-btn" onclick="addUser()">Add / Merge User</button>
+                <!-- Form Section -->
+                <div class="bx--tile" style="margin-bottom: 2rem;">
+                    <h4 class="bx--type-heading-03">Add Account</h4>
+                    <div class="form-wrapper">
+                        <div class="bx--form-item" style="margin-bottom: 1rem;">
+                            <label for="user_name" class="bx--label">Account Name</label>
+                            <input type="text" id="user_name" class="bx--text-input" placeholder="Enter Account Name">
+                        </div>
+
+                        <div class="bx--form-item" style="margin-bottom: 1rem;">
+                            <label for="salesforce_name" class="bx--label">Salesforce Account Name</label>
+                            <input type="text" id="salesforce_name" class="bx--text-input" placeholder="Enter Salesforce Account Name">
+                        </div>
+
+                        <button class="bx--btn bx--btn--primary" onclick="addUser()">Add</button>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="bx--tile table-container">
+                    <table id="users_table" class="bx--data-table bx--data-table--zebra">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">S.No</th>
+                                <th style="width: 35%;">Account Name</th>
+                                <th style="width: 45%;">Salesforce Account Name</th>
+                                <th style="width: 140px; text-align:center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows populated dynamically via script.js -->
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
-        </div>
-
-        <!-- Users Table -->
-        <div class="table-card">
-            <h2>Users List</h2>
-            <table id="users_table">
-                <thead>
-                    <tr>
-                        <th>S.No</th>
-                        <th>User Name</th>
-                        <th>Salesforce Names</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
         </div>
     </div>
 
