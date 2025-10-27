@@ -12,24 +12,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tbody = document.querySelector("#users_table tbody");
     tbody.innerHTML = "";
   
-    let sno = 1;
-    data.forEach(user => {
-      user.salesforce_names.forEach(sfName => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${sno++}</td>
-          <td style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${escapeHtml(user.user_name)}</td>
-          <td contenteditable="true" onblur="updateName('${user.id}', '${escapeJs(sfName)}', this.innerText)">
-            ${escapeHtml(sfName)}
-          </td>
-          <td>
-            <div class="action-buttons">
-              <button class="bx--btn bx--btn--sm bx--btn--secondary" onclick="updateUser('${user.id}')">Update</button>
-              <button class="bx--btn bx--btn--sm bx--btn--danger" onclick="deleteUser('${user.id}', '${escapeJs(sfName)}')">Delete</button>
-            </div>
-          </td>`;
-        tbody.appendChild(tr);
-      });
+    data.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="account-name-cell">${escapeHtml(row.user_name || '')}</td>
+        <td class="sf-name-cell" contenteditable="true" onblur="updateName('${row.id}', this.innerText)">
+          ${escapeHtml(row.salesforce_name || '')}
+        </td>
+        <td>
+          <div class="action-buttons">
+            <button class="bx--btn bx--btn--sm bx--btn--secondary" onclick="updateUser('${row.id}')">Update</button>
+            <button class="bx--btn bx--btn--sm bx--btn--danger" onclick="deleteUser('${row.id}')">Delete</button>
+          </div>
+        </td>`;
+      tbody.appendChild(tr);
     });
   
     // update combobox options
@@ -102,74 +98,43 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
   
-    const resUsers = await fetch("/users");
-    const users = await resUsers.json();
-    const existing = users.find(u => u.user_name.toLowerCase() === userName.toLowerCase());
-  
-    if (existing) {
-      if (existing.salesforce_names.includes(salesforceName)) {
-        showCarbonNotification("warning", "Salesforce Account already exists for this Account");
-        return;
-      }
-      existing.salesforce_names.push(salesforceName);
-      await fetch(`/users/${existing.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(existing)
-      });
-      document.getElementById("salesforce_name").value = "";
-      await loadUsers();
-      showCarbonNotification("success", "Salesforce Account added");
-      return;
-    }
-  
     await fetch("/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_name: userName, salesforce_names: [salesforceName] })
+      body: JSON.stringify({ user_name: userName, salesforce_name: salesforceName })
     });
   
     document.getElementById("salesforce_name").value = "";
     input.value = "";
     await loadUsers();
-    showCarbonNotification("success", "New Account added successfully");
+    showCarbonNotification("success", "Account Name saved");
   }
   
   async function updateUser(id) {
     const res = await fetch("/users");
     const users = await res.json();
-    const user = users.find(u => u.id === id);
-    if (!user) return;
+    const row = users.find(u => u.id === id);
+    if (!row) return;
     await fetch(`/users/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user)
+      body: JSON.stringify({
+        user_name: row.user_name,
+        salesforce_name: row.salesforce_name
+      })
     });
-    showCarbonNotification("success", "User updated successfully");
+    showCarbonNotification("success", "Account updated");
   }
   
-  async function deleteUser(id, sfNameToDelete) {
-    if (!confirm("Are you sure you want to delete this entry?")) return;
-    const resUsers = await fetch("/users");
-    const users = await resUsers.json();
-    const user = users.find(u => u.id === id);
-    if (!user) return;
-    if (user.salesforce_names.length === 1 && user.salesforce_names[0] === sfNameToDelete) {
-      await fetch(`/users/${id}`, { method: "DELETE" });
-    } else {
-      const updatedNames = user.salesforce_names.filter(n => n !== sfNameToDelete);
-      await fetch(`/users/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_name: user.user_name, salesforce_names: updatedNames })
-      });
-    }
+  async function deleteUser(id) {
+    if (!confirm("Are you sure you want to delete this mapping?")) return;
+    await fetch(`/users/${id}`, { method: "DELETE" });
     await loadUsers();
-    showCarbonNotification("success", "Entry deleted successfully");
+    showCarbonNotification("success", "Account deleted successfully");
   }
   
-  async function updateName(id, oldName, newName) {
-    newName = newName.trim();
+  async function updateName(id, newName) {
+    newName = (newName || '').trim();
     if (!newName) {
       showCarbonNotification("error", "Salesforce Name cannot be empty");
       await loadUsers();
@@ -177,18 +142,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     const res = await fetch("/users");
     const users = await res.json();
-    const user = users.find(u => u.id === id);
-    if (!user) return;
-    if (user.salesforce_names.includes(newName) && oldName !== newName) {
-      showCarbonNotification("warning", "Duplicate Salesforce Name not allowed");
-      await loadUsers();
-      return;
-    }
-    const updatedNames = user.salesforce_names.map(n => (n === oldName ? newName : n));
+    const row = users.find(u => u.id === id);
+    if (!row) return;
     await fetch(`/users/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_name: user.user_name, salesforce_names: updatedNames })
+      body: JSON.stringify({ user_name: row.user_name, salesforce_name: newName })
     });
     await loadUsers();
   }
