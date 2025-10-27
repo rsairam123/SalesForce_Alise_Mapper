@@ -1,136 +1,185 @@
 /* Base */
 body {
-  background-color: #f4f7fb;
-  font-family: "IBM Plex Sans", sans-serif;
-  margin: 0;
-  padding: 24px;
-}
+    background-color: #f4f7fb;
+    font-family: "IBM Plex Sans", sans-serif;
+    margin: 0;
+    padding: 24px;
+  }
+  
+  /* Input tile section */
+  .input-section {
+    width: 720px;
+    margin: 0 40px 24px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background-color: #ffffff;
+    border-radius: 8px;
+  }
+  
+  /* Left-aligned form inside tile */
+  .form-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .full-width { width: 100%; }
+  
+  /* Combo box styling */
+  .combo-box--custom {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .combo-box--custom .bx--text-input {
+    width: 350px;
+    padding-right: 36px;
+  }
+  
+  .combo-box--custom .bx--list-box__menu-icon {
+    position: absolute;
+    right: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    height: 28px;
+  }
+  
+  /* Dropdown menu */
+  .bx--list-box__menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 1200;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+    box-shadow: 0 6px 18px rgba(16,24,40,0.08);
+    padding: 6px 0;
+    display: none;
+  }
+  
+  .bx--list-box__menu[aria-hidden="false"] {
+    display: block;
+  }
+  
+  .bx--list-box__menu-item {
+    list-style: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .bx--list-box__menu-item:hover {
+    background: #edf5ff;
+  }
+  
+  /* Table section */
+  .table-section {
+    width: 95%;
+    margin: 0 auto;
+    padding: 6px 8px;
+  }
 
-/* Input tile centered on page, but form content aligned left inside tile */
-.input-section {
-  width: 720px;          /* tile width */
-  margin: 0 40px 24px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  background-color: #ffffff; /* white background */
-  border-radius: 8px; 
-}
+  /* Pagination spacing */
+  #table-pagination {
+    margin: 8px 0 12px;
+  }
+  
+  .bx--data-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  /* Header & cells */
+  /* Let Carbon control header background; only adjust spacing/typography */
+  .bx--data-table th {
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 12px;
+    border-bottom: 1px solid #f2f4f8;
+  }
+  
+  .bx--data-table td {
+    background-color: #ffffff;
+    padding: 12px;
+    border-top: 1px solid #f2f4f8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Zebra rows */
+  .bx--data-table--zebra tbody tr:nth-child(even) td {
+    background-color: #f9fbff !important;
+  }
+  
+  /* Sortable column visuals */
+  .bx--table-sort__button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    color: #161616;
+  }
 
-/* Left-aligned form block inside tile */
-.form-left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* aligns inputs to left */
-  gap: 12px;
-}
-
-/* Make form items full width of the tile content */
-.full-width { width: 100%; }
-
-/* Combo box container styling & positioning for dropdown */
-.combo-box--custom {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.combo-box--custom .bx--text-input {
-  width: 350px;
-  padding-right: 36px; /* space for the menu icon */
-}
-
-.combo-box--custom .bx--list-box__menu-icon {
-  position: absolute;
-  right: 8px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  height: 28px;
-}
-
-/* Menu (dropdown) styling - positions right under the input and full width */
-.bx--list-box__menu {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 6px);
-  z-index: 1200;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  max-height: 240px;
-  overflow-y: auto;
-  box-shadow: 0 6px 18px rgba(16,24,40,0.08);
-  padding: 6px 0;
-  display: none;
-}
-
-/* visible state */
-.bx--list-box__menu[aria-hidden="false"] {
-  display: block;
-}
-
-/* individual items */
-.bx--list-box__menu-item {
-  list-style: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.bx--list-box__menu-item:hover {
-  background: #edf5ff;
-}
-
-/* Table adjustments */
-.table-section {
-  width: 95%;
-  margin: 0 auto;
-  padding: 6px 8px;
-}
-
-.bx--data-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed; /* ensure width usage of columns */
-}
-
-.bx--data-table th {
-  text-transform: uppercase;
-  font-weight: 700;
-  padding: 12px;
-  background: #ffffff;
-}
-
-.bx--data-table td {
-  padding: 12px;
-  border-top: 1px solid #eef3ff;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Keep action buttons side-by-side and compact */
-.action-buttons {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-  align-items: center;
-}
-
-/* smaller Carbon buttons look consistent */
-.bx--btn--sm {
-  padding: 4px 8px;
-}
-
-/* notifications z-index fix */
-.bx--inline-notification { z-index: 1300; }
-
-/* Small screens: make tile full width */
-@media (max-width: 800px) {
-  .input-section { width: 95%; }
-  .table-section { width: 100%; }
-}
+  .sort-icons .icon-sort { display: none; vertical-align: middle; }
+  th[aria-sort="none"] .icon-sort--default { display: inline; color: #8d8d8d; }
+  th[aria-sort="ascending"] .icon-sort--asc { display: inline; color: #0f62fe; }
+  th[aria-sort="descending"] .icon-sort--desc { display: inline; color: #0f62fe; }
+  
+  /* Account/SF column styling */
+  .account-name-cell {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #161616;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sf-name-cell {
+    font-weight: 400;
+    font-size: 0.98rem;
+    color: #525252;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Action buttons */
+  .action-buttons {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .bx--btn--sm {
+    padding: 4px 8px;
+  }
+  
+  /* Notification z-index fix */
+  .bx--inline-notification { z-index: 1300; }
+  
+  /* Responsive */
+  @media (max-width: 800px) {
+    .input-section { width: 95%; }
+    .table-section { width: 100%; }
+  }
+  
