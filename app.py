@@ -27,13 +27,18 @@ def index():
 @app.route('/users', methods=['GET'])
 def get_users():
     data = []
-    for i, doc_id in enumerate(db):
+    for doc_id in db:
         doc = db[doc_id]
+        # Support both legacy (array) and new (single) schema on read
+        sf_name = doc.get("salesforce_name")
+        if not sf_name:
+            names = doc.get("salesforce_names", [])
+            sf_name = names[0] if isinstance(names, list) and names else None
         data.append({
-            "sno": i + 1,
             "id": doc_id,
             "user_name": doc.get("user_name"),
-            "salesforce_names": doc.get("salesforce_names", [])
+            "salesforce_name": sf_name,
+            "conflicts": doc.get("conflicts", [])
         })
     return jsonify(data)
 
@@ -41,33 +46,42 @@ def get_users():
 @app.route('/users', methods=['POST'])
 def add_user():
     info = request.json
-    user_name = info.get("user_name")
-    salesforce_names = info.get("salesforce_names", [])
+    user_name = (info.get("user_name") or "").strip()
+    salesforce_name = (info.get("salesforce_name") or "").strip()
 
-    if isinstance(salesforce_names, str):
-        salesforce_names = [salesforce_names]
+    if not user_name or not salesforce_name:
+        return jsonify({"error": "user_name and salesforce_name are required"}), 400
 
-    # Check if user already exists
+    # Find existing doc by user_name (case-insensitive)
     existing_doc = None
     for doc_id in db:
         doc = db[doc_id]
-        if doc.get("user_name", "").strip().lower() == user_name.strip().lower():
+        if (doc.get("user_name", "").strip().lower() == user_name.lower()):
             existing_doc = doc
             break
 
     if existing_doc:
-        # Merge Salesforce names (avoid duplicates)
-        existing_sf_names = set(existing_doc.get("salesforce_names", []))
-        existing_sf_names.update(salesforce_names)
-        existing_doc["salesforce_names"] = list(existing_sf_names)
+        current_sf = existing_doc.get("salesforce_name")
+        if current_sf and current_sf.lower() != salesforce_name.lower():
+            # Track conflicts separately
+            conflicts = existing_doc.get("conflicts", [])
+            if salesforce_name not in conflicts:
+                conflicts.append(salesforce_name)
+            existing_doc["conflicts"] = conflicts
+        # Always set main mapping to the latest provided name
+        existing_doc["salesforce_name"] = salesforce_name
+        # Clean legacy field if present
+        if "salesforce_names" in existing_doc:
+            existing_doc.pop("salesforce_names", None)
         db.save(existing_doc)
-        return jsonify({"msg": "Updated existing user", "id": existing_doc.id})
+        return jsonify({"msg": "Updated existing mapping", "id": existing_doc.id})
     else:
         doc_id, _ = db.save({
             "user_name": user_name,
-            "salesforce_names": salesforce_names
+            "salesforce_name": salesforce_name,
+            "conflicts": []
         })
-        return jsonify({"msg": "Added new user", "id": doc_id})
+        return jsonify({"msg": "Added new mapping", "id": doc_id})
 
 
 @app.route('/users/<id>', methods=['PUT'])
@@ -75,8 +89,16 @@ def update_user(id):
     if id in db:
         doc = db[id]
         info = request.json
-        doc["user_name"] = info.get("user_name", doc["user_name"])
-        doc["salesforce_names"] = info.get("salesforce_names", doc["salesforce_names"])
+        if "user_name" in info and info["user_name"].strip():
+            doc["user_name"] = info["user_name"].strip()
+        if "salesforce_name" in info and info["salesforce_name"].strip():
+            doc["salesforce_name"] = info["salesforce_name"].strip()
+            # Remove from conflicts if resolved
+            conflicts = doc.get("conflicts", [])
+            doc["conflicts"] = [c for c in conflicts if c.lower() != doc["salesforce_name"].lower()]
+        # Clean legacy field if present
+        if "salesforce_names" in doc:
+            doc.pop("salesforce_names", None)
         db.save(doc)
         return jsonify({"msg": "Updated"})
     return jsonify({"error": "Not found"}), 404
