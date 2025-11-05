@@ -9,6 +9,8 @@ app = Flask(__name__)
 COUCHDB_URL = "http://admin:21951a05g1@127.0.0.1:5984/"
 DB_NAME = "user_aliases"
 
+
+
 couch = couchdb.Server(COUCHDB_URL)
 if DB_NAME in couch:
     db = couch[DB_NAME]
@@ -27,13 +29,18 @@ def index():
 @app.route('/users', methods=['GET'])
 def get_users():
     data = []
-    for i, doc_id in enumerate(db):
+    for doc_id in db:
         doc = db[doc_id]
+        # Support both legacy (array) and new (single) schema on read
+        sf_name = doc.get("salesforce_name")
+        if not sf_name:
+            names = doc.get("salesforce_names", [])
+            sf_name = names[0] if isinstance(names, list) and names else None
         data.append({
-            "sno": i + 1,
             "id": doc_id,
             "user_name": doc.get("user_name"),
-            "salesforce_names": doc.get("salesforce_names", [])
+            "salesforce_name": sf_name,
+            "conflicts": doc.get("conflicts", [])
         })
     return jsonify(data)
 
@@ -41,33 +48,40 @@ def get_users():
 @app.route('/users', methods=['POST'])
 def add_user():
     info = request.json
-    user_name = info.get("user_name")
-    salesforce_names = info.get("salesforce_names", [])
+    user_name = (info.get("user_name") or "").strip()
+    salesforce_name = (info.get("salesforce_name") or "").strip()
 
-    if isinstance(salesforce_names, str):
-        salesforce_names = [salesforce_names]
+    if not user_name or not salesforce_name:
+        return jsonify({"error": "user_name and salesforce_name are required"}), 400
 
-    # Check if user already exists
-    existing_doc = None
+    # First, check if a document already exists with the exact pair (case-insensitive)
+    exact_match_id = None
     for doc_id in db:
         doc = db[doc_id]
-        if doc.get("user_name", "").strip().lower() == user_name.strip().lower():
-            existing_doc = doc
+        if doc.get("user_name", "").strip().lower() == user_name.lower() and \
+           (doc.get("salesforce_name") or "").strip().lower() == salesforce_name.lower():
+            exact_match_id = doc_id
             break
 
-    if existing_doc:
-        # Merge Salesforce names (avoid duplicates)
-        existing_sf_names = set(existing_doc.get("salesforce_names", []))
-        existing_sf_names.update(salesforce_names)
-        existing_doc["salesforce_names"] = list(existing_sf_names)
-        db.save(existing_doc)
-        return jsonify({"msg": "Updated existing user", "id": existing_doc.id})
-    else:
-        doc_id, _ = db.save({
-            "user_name": user_name,
-            "salesforce_names": salesforce_names
-        })
-        return jsonify({"msg": "Added new user", "id": doc_id})
+    if exact_match_id:
+        return jsonify({"msg": "Mapping already exists", "id": exact_match_id})
+
+    # Enforce uniqueness of salesforce_name across all documents (case-insensitive)
+    for doc_id in db:
+        doc = db[doc_id]
+        if (doc.get("salesforce_name") or "").strip().lower() == salesforce_name.lower():
+            return jsonify({
+                "error": "salesforce_name must be unique",
+                "details": f"The salesforce_name '{salesforce_name}' is already mapped to user '{doc.get('user_name')}'."
+            }), 409
+
+    # Create a new mapping document. Allow duplicate user_name values.
+    doc_id, _ = db.save({
+        "user_name": user_name,
+        "salesforce_name": salesforce_name,
+        "conflicts": []
+    })
+    return jsonify({"msg": "Added new mapping", "id": doc_id})
 
 
 @app.route('/users/<id>', methods=['PUT'])
@@ -75,8 +89,37 @@ def update_user(id):
     if id in db:
         doc = db[id]
         info = request.json
-        doc["user_name"] = info.get("user_name", doc["user_name"])
-        doc["salesforce_names"] = info.get("salesforce_names", doc["salesforce_names"])
+
+        # Prepare potential new values
+        new_user_name = doc.get("user_name")
+        new_sf_name = doc.get("salesforce_name")
+
+        if "user_name" in info and isinstance(info["user_name"], str) and info["user_name"].strip():
+            new_user_name = info["user_name"].strip()
+        if "salesforce_name" in info and isinstance(info["salesforce_name"], str) and info["salesforce_name"].strip():
+            candidate_sf = info["salesforce_name"].strip()
+            # If changing to a different salesforce_name, enforce global uniqueness
+            if candidate_sf.lower() != (new_sf_name or "").lower():
+                for other_id in db:
+                    if other_id == id:
+                        continue
+                    other = db[other_id]
+                    if (other.get("salesforce_name") or "").strip().lower() == candidate_sf.lower():
+                        return jsonify({
+                            "error": "salesforce_name must be unique",
+                            "details": f"The salesforce_name '{candidate_sf}' is already mapped to user '{other.get('user_name')}'."
+                        }), 409
+            new_sf_name = candidate_sf
+
+        # Apply updates
+        doc["user_name"] = new_user_name
+        doc["salesforce_name"] = new_sf_name
+        # Remove resolved conflicts (keep field for backward compatibility)
+        conflicts = doc.get("conflicts", [])
+        doc["conflicts"] = [c for c in conflicts if c.lower() != (new_sf_name or "").lower()]
+        # Clean legacy field if present
+        if "salesforce_names" in doc:
+            doc.pop("salesforce_names", None)
         db.save(doc)
         return jsonify({"msg": "Updated"})
     return jsonify({"error": "Not found"}), 404

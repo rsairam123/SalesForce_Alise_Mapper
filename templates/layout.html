@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ title or "Salesforce Account Alias Mapper" }}</title>
+
+  <!-- Carbon CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css" />
+  <!-- Your custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="bx--body">
+
+  <!-- Header -->
+  <header class="bx--header bx--header--global" role="banner" aria-label="Global header">
+    <div class="bx--header__global">
+      <div class="bx--header__name">
+        <a href="/" class="bx--header__name--prefix">IBM</a>
+      </div>
+      <div class="bx--header__global-actions">
+        <!-- You could add icons or user menu here -->
+        <a href="#" class="bx--header__action">Help</a>
+        <a href="#" class="bx--header__action">Sign out</a>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- Footer -->
+  <footer class="bx--footer" role="contentinfo" style="padding: 2rem; text-align: center; margin-top: 2rem; border-top: 1px solid #e0e0e0;">
+    <div class="bx--footer__content">
+      <p>© {{ current_year }} Your Company. All rights reserved.</p>
+      <ul style="list-style: none; padding: 0; margin: 0; display: inline-block;">
+        <li style="display: inline; margin: 0 1rem;"><a href="#">Privacy Policy</a></li>
+        <li style="display: inline; margin: 0 1rem;"><a href="#">Terms of Use</a></li>
+        <li style="display: inline; margin: 0 1rem;"><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- Carbon JS (optional) -->
+  <script src="https://unpkg.com/carbon-components/scripts/carbon-components.min.js"></script>
+</body>
+</html>
